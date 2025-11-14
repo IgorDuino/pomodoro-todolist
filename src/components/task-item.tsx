@@ -6,13 +6,15 @@ import { Button } from "./ui/button";
 import { PomodoroTimer } from "./pomodoro-timer";
 import { Check, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PomodoroSettings } from "@/types/settings";
 
 interface TaskItemProps {
   task: Task;
   onUpdate: (task: Task) => void;
+  settings: PomodoroSettings;
 }
 
-export function TaskItem({ task, onUpdate }: TaskItemProps) {
+export function TaskItem({ task, onUpdate, settings }: TaskItemProps) {
   const handleToggleComplete = () => {
     onUpdate({ ...task, completed: !task.completed });
   };
@@ -41,6 +43,14 @@ export function TaskItem({ task, onUpdate }: TaskItemProps) {
     onUpdate({
       ...task,
       isRunning: true,
+    });
+  };
+
+  const handleSaveProgress = () => {
+    // Save current progress and stop the timer
+    onUpdate({
+      ...task,
+      isRunning: false,
     });
   };
 
@@ -103,7 +113,10 @@ export function TaskItem({ task, onUpdate }: TaskItemProps) {
             <PomodoroTimer
               onCycleComplete={handleCycleComplete}
               onTimeUpdate={handleTimeUpdate}
+              onSaveProgress={handleSaveProgress}
               initialTime={task.currentCycleTime || 0}
+              completedCycles={completedCycles}
+              settings={settings}
             />
           ) : (
             <div className="space-y-2">
@@ -134,6 +147,11 @@ export function TaskItem({ task, onUpdate }: TaskItemProps) {
                   />
                 ))}
               </div>
+              {task.currentCycleTime && task.currentCycleTime > 0 && (
+                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Saved progress: {Math.floor(task.currentCycleTime / 60)}m {task.currentCycleTime % 60}s
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -141,3 +159,4 @@ export function TaskItem({ task, onUpdate }: TaskItemProps) {
     </Card>
   );
 }
+

@@ -30,7 +30,7 @@ export function DayNavigation({ currentDate, onDateChange }: DayNavigationProps)
   };
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center gap-4 flex-1">
       <Button
         variant="ghost"
         size="icon"
@@ -40,7 +40,7 @@ export function DayNavigation({ currentDate, onDateChange }: DayNavigationProps)
         <ChevronLeft className="h-5 w-5" />
       </Button>
       
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-1 justify-center">
         <h2 className="text-xl font-semibold">{getDateLabel()}</h2>
         {!isToday(currentDate) && (
           <Button
