@@ -9,27 +9,30 @@ import { AddTaskDialog } from "@/components/add-task-dialog";
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    // Load tasks from localStorage on mount
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem("pomodoro-tasks");
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch (e) {
-          console.error("Failed to load tasks:", e);
-        }
+  const [mounted, setMounted] = useState(false);
+  
+  // Initialize tasks from localStorage only on client side
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    const stored = localStorage.getItem("pomodoro-tasks");
+    if (stored) {
+      try {
+        setTasks(JSON.parse(stored));
+      } catch (e) {
+        console.error("Failed to load tasks:", e);
       }
     }
-    return [];
-  });
+  }, []);
 
-  // Save tasks to localStorage whenever they change
+  // Save tasks to localStorage whenever they change (only when mounted)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (mounted) {
       localStorage.setItem("pomodoro-tasks", JSON.stringify(tasks));
     }
-  }, [tasks]);
+  }, [tasks, mounted]);
 
   const currentDateStr = format(currentDate, "yyyy-MM-dd");
   const todayTasks = tasks.filter((task) => task.date === currentDateStr);
